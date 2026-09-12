@@ -15,8 +15,33 @@
 
 ## 🚀 Getting Started
 
-Since this is a lightweight frontend application with no complex build steps or backend servers, you can run it locally in seconds:
+You can run Grade Tracker using either of the following methods:
 
+### Option 1: Live Demo (GitHub Pages)
+The easiest way to use the application without downloading any files:
+👉 **[Access Grade Tracker Live](https://abhiram-baburaj.github.io/Grade-Tracker/)**
+
+### Option 2: Run Locally
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/Abhiram-Baburaj/Grade-Tracker.git](https://github.com/Abhiram-Baburaj/Grade-Tracker.git)
+   git clone https://github.com/Abhiram-Baburaj/Grade-Tracker.git
+   ```
+2. **Navigate to the project directory:**
+   ```bash
+   cd Grade-Tracker
+   ```
+3. **Launch the application:**
+   Double-click the `index.html` file to open it directly in your web browser, or serve it locally using a tool like VS Code's *Live Server* extension.
+
+---
+
+## 🛠️ Built With
+
+- **HTML5 / CSS3** — Structure and modern styling.
+- **JavaScript (ES6+)** — Application logic and dynamic calculation engine.
+
+---
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
