@@ -1274,3 +1274,47 @@ window.onload = () => {
     loadState();
 };
 
+// ========================================================
+// PWA AUTOMATIC INSTALL CODE
+// ========================================================
+
+// 1. Register the Service Worker (Notice the '/' path so it reads from the root)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker successfully registered!', reg))
+      .catch(err => console.error('Service Worker registration failed:', err));
+  });
+}
+
+// 2. Capture the browser's automatic install trigger
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the default browser banner from popping up randomly
+  e.preventDefault();
+  // Save the event so we can trigger it later
+  deferredPrompt = e;
+  
+  console.log('App is ready for automatic installation.');
+});
+
+// 3. Trigger the prompt automatically on the user's very first click/tap on the page
+window.addEventListener('click', () => {
+  // Check if the install prompt event has been captured yet
+  if (deferredPrompt) {
+    // Show the install prompt immediately
+    deferredPrompt.prompt();
+    
+    // Wait for the user's decision (Accepted or Cancelled)
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User installed the web app!');
+      } else {
+        console.log('User dismissed the installation.');
+      }
+      // Clear the prompt variable so it doesn't trigger again on next clicks
+      deferredPrompt = null;
+    });
+  }
+});
