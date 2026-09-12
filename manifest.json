@@ -1,7 +1,7 @@
 {
-  "name": "My App",
-  "short_name": "App",
-  "start_url": "/",
+  "name": "Grade Tracker",
+  "short_name": "Grade Tracker",
+  "start_url": "https://abhiram-baburaj.github.io/Grade-Tracker/",
   "display": "standalone",
   "icons": [
     {
