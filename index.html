@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fdfbf7">
+    <title>Grade Planner — Student Grade Calculator</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        paper: "#fdfbf7",
+                        pencil: "#2d2d2d",
+                        erased: "#e5e0d8",
+                        marker: "#ff4d4d",
+                        pen: "#2d5da1",
+                        sticky: "#fff9c4"
+                    },
+                    fontFamily: {
+                        heading: ["Kalam", "cursive"],
+                        hand: ["Patrick Hand", "cursive"]
+                    }
+                }
+            }
+        };
+    </script>
+
+    <link rel="stylesheet" href="./static/style.css">
+    <script src="./static/js/state.js"></script>
+    <script src="./static/js/calculator.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+    <main class="mx-auto max-w-5xl px-5 py-10 md:py-16">
+
+        <header class="relative mb-12">
+            <div class="absolute -right-1 top-0 hidden text-4xl md:block wiggle">✦</div>
+            <div class="absolute right-0 top-0 flex gap-2 z-10">
+                <button onclick="toggleDarkMode()" class="sketch-button p-2" aria-label="Toggle Theme">
+                    🌓
+                </button>
+            </div>
+
+            <div class="mb-5 flex flex-wrap items-center gap-3 mt-12 md:mt-0">
+                <span class="sticky w-fit px-4 py-2 text-base font-bold">STUDENT TOOL ✎</span>
+                <span class="text-base opacity-60">a little calculator for a big target</span>
+            </div>
+
+            <h1 class="text-5xl font-bold leading-normal md:text-7xl">
+                Grade <span class="scribble">Planner!</span>
+            </h1>
+
+            <p class="mt-4 max-w-2xl text-xl leading-relaxed md:text-2xl">
+                Put in your marks, set your target, and let the calculator work out
+                <strong>exactly what you need</strong> on the assignments you have left.
+            </p>
+        </header>
+
+        <!-- MAIN PLANNER -->
+        <section id="planner" class="paper-card relative p-5 md:p-8">
+            <div class="tape"></div>
+
+            <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest opacity-55">Step 1</p>
+                    <h2 class="text-3xl font-bold md:text-4xl">Set your target</h2>
+                    <p class="mt-1 text-base md:text-lg opacity-65">Choose the course you’re planning for and set your goal.</p>
+                </div>
+
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <div class="relative min-w-0 flex-1 sm:min-w-[180px]">
+                        <label for="course-name" class="mb-1 block text-xs font-bold uppercase tracking-widest opacity-60">Course name</label>
+                        <input
+                            type="text"
+                            id="course-name"
+                            class="sketch-input text-lg font-bold"
+                            value="Course 1"
+                            oninput="updateCourseName(this.value); saveState()"
+                            aria-label="Course name"
+                        >
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <label for="targetGrade" class="text-xs font-bold uppercase tracking-widest opacity-60">Target</label>
+                            <input
+                                type="number"
+                                id="targetGrade"
+                                min="1"
+                                max="100"
+                                value="80"
+                                class="sketch-input w-24 text-center text-2xl font-bold"
+                                oninput="clampTarget(this)"
+                                aria-label="Target final grade"
+                            >
+                            <span class="text-2xl font-bold">%</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label for="passTarget" class="text-xs font-bold uppercase tracking-widest opacity-60">Pass</label>
+                            <input
+                                type="number"
+                                id="passTarget"
+                                min="0"
+                                max="100"
+                                value="50"
+                                class="sketch-input w-20 text-center text-xl font-bold"
+                                oninput="clampPassTarget(this)"
+                                aria-label="Pass target grade"
+                            >
+                            <span class="text-xl font-bold">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div class="flex items-center gap-2">
+                    <p class="text-sm font-bold uppercase tracking-widest opacity-55">Courses</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="addCourse()" class="sketch-button blue text-sm md:text-base">
+                        + Add course
+                    </button>
+                    <button type="button" onclick="loadSampleData()" class="sketch-button text-sm md:text-base">
+                        Try sample data
+                    </button>
+                </div>
+            </div>
+
+            <div id="course-tabs" class="course-tabs mb-6"></div>
+
+            <div class="rough-divider mb-7"></div>
+
+            <!-- ASSIGNMENTS -->
+            <div class="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-widest opacity-55">Step 2</p>
+                    <h2 class="text-3xl font-bold md:text-4xl">Add your assignments</h2>
+                    <p class="text-lg opacity-65">Tick an assignment when you already know its mark.</p>
+                </div>
+
+                <span id="weight-total" class="w-fit sticky px-3 py-1 text-base font-bold">0% of course</span>
+            </div>
+
+            <div class="assignment-grid mb-3 px-2 text-sm font-bold opacity-60">
+                <span class="text-center">Done</span>
+                <span>Assignment</span>
+                <span>Weight</span>
+                <span>Your mark</span>
+                <span></span>
+                <span>Max</span>
+                <span></span>
+            </div>
+
+            <div id="components-list" class="space-y-4"></div>
+
+            <div class="mt-6 flex flex-wrap gap-4">
+                <button onclick="addRow()" class="sketch-button blue">
+                    + Add assignment
+                </button>
+                <button onclick="clearRows()" class="sketch-button muted">
+                    Clear all
+                </button>
+            </div>
+
+            <div id="error-msg" class="mt-5 hidden paper-card-soft p-4 text-lg font-bold text-[#ff4d4d]"></div>
+
+            <div class="relative mt-8">
+                <div class="absolute -right-2 -top-8 hidden text-3xl md:block wiggle">↘</div>
+                <button onclick="calculateGrade()" class="sketch-button w-full bg-[#2d2d2d] text-white text-xl dark:bg-[#f5f0e8] dark:text-[#2d2d2d]">
+                    Calculate what I need!
+                </button>
+            </div>
+        </section>
+
+        <!-- RESULTS -->
+        <section id="results-container" class="mt-16 hidden fade-up">
+            <div class="mb-8">
+                <p class="text-sm font-bold uppercase tracking-widest opacity-55">Step 3</p>
+                <h2 class="text-4xl font-bold md:text-5xl">Your game plan</h2>
+                <p class="mt-2 text-xl opacity-70">Here is the score you should aim for.</p>
+            </div>
+
+            <div id="status-card" class="paper-card relative mb-8 p-6 md:p-8">
+                <div class="tack"></div>
+
+                <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <p id="status-label" class="text-sm font-bold uppercase tracking-widest opacity-60"></p>
+                        <h3 id="status-title" class="mt-1 text-3xl font-bold md:text-4xl"></h3>
+                        <p id="status-description" class="mt-2 max-w-2xl text-xl leading-relaxed opacity-75"></p>
+                    </div>
+                    <div id="status-value" class="shrink-0 text-5xl font-bold md:text-6xl"></div>
+                </div>
+            </div>
+
+            <div class="grid gap-8 md:grid-cols-2">
+                <!-- LEFT -->
+                <div class="space-y-8">
+                    <div class="grid grid-cols-2 gap-5">
+                        <div class="paper-card-soft p-5 -rotate-1">
+                            <div class="icon-circle mb-3">✓</div>
+                            <p class="text-sm font-bold uppercase tracking-wider opacity-55">Current</p>
+                            <p id="current-score" class="mt-1 text-4xl font-bold"></p>
+                            <p class="mt-1 opacity-60">earned so far</p>
+                        </div>
+
+                        <div class="paper-card-soft p-5 rotate-1">
+                            <div class="icon-circle mb-3">↗</div>
+                            <p class="text-sm font-bold uppercase tracking-wider opacity-55">Remaining</p>
+                            <p id="remaining-weight" class="mt-1 text-4xl font-bold"></p>
+                            <p class="mt-1 opacity-60">still available</p>
+                        </div>
+
+                        <div class="paper-card-soft p-5 rotate-1">
+                            <div class="icon-circle mb-3">◎</div>
+                            <p class="text-sm font-bold uppercase tracking-wider opacity-55">Needed Avg</p>
+                            <p id="needed-percentage" class="mt-1 text-4xl font-bold"></p>
+                            <p class="mt-1 opacity-60">on remaining work</p>
+                        </div>
+
+                        <div class="paper-card-soft p-5 -rotate-1">
+                            <div class="icon-circle mb-3">⬢</div>
+                            <p class="text-sm font-bold uppercase tracking-wider opacity-55">Max Possible</p>
+                            <p id="maximum-summary" class="mt-1 text-4xl font-bold"></p>
+                            <p class="mt-1 opacity-60">with 100% remaining</p>
+                        </div>
+                    </div>
+
+                    <div class="paper-card-soft p-5">
+                        <div class="mb-3 flex items-center justify-between gap-3">
+                            <p class="text-xl font-bold">Completion</p>
+                            <span id="completed-weight-label" class="text-base font-bold opacity-70">0%</span>
+                        </div>
+                        <div class="h-4 w-full overflow-hidden rounded-full border-2 border-[#2d2d2d] bg-[#f1eee7]">
+                            <div id="completed-progress" class="h-full rounded-full bg-[#22c55e] transition-all duration-500" style="width:0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="paper-card-soft p-5">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <p class="text-xl font-bold">Breakdown</p>
+                            <span class="rounded-full border-2 border-[#2d2d2d] px-3 py-1 text-sm font-bold">Target: <span id="target-summary">80%</span></span>
+                        </div>
+                        <div id="breakdown-list" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <!-- RIGHT -->
+                <div class="space-y-8">
+                    <div class="paper-card-soft p-5">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <p class="text-xl font-bold">Weight distribution</p>
+                        </div>
+                        <div class="h-72">
+                            <canvas id="weightChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="paper-card-soft p-5">
+                        <p class="mb-3 text-xl font-bold">What-if scenarios</p>
+                        <div id="whatif-scenarios-container" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="mt-12 flex justify-center">
+            <button id="export-btn-bottom" type="button" onclick="exportToPDF()" class="sketch-button blue">
+                📄 Export Full Report as PDF
+            </button>
+        </div>
+    </main>
+
+    <script src="./static/script.js"></script>
+</body>
+</html>
