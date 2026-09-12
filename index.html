@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#fdfbf7">
-    <title>Grade Planner — Student Grade Calculator</title>
+    <title>Grade Tracker — Student Grade Calculator</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -275,11 +275,49 @@
         </section>
 
         <div class="mt-12 flex justify-center">
-            <button id="export-btn-bottom" type="button" onclick="exportToPDF()" class="sketch-button blue">
+            <button id="export-btn-bottom" type="button" onclick="exportToPDF()" class="sketch-button blue hidden" aria-live="polite">
                 📄 Export Full Report as PDF
             </button>
         </div>
     </main>
+
+    <footer class="mt-16 border-t-2 border-[color:var(--pencil)]/70">
+        <div class="mx-auto max-w-5xl px-5 py-8">
+            <div class="grid gap-6 text-center md:grid-cols-3 md:text-center">
+                <div class="flex flex-col items-center">
+                    <div class="mb-3 inline-block rounded-full border-2 border-[color:var(--pencil)] bg-[color:var(--sticky)] px-3 py-1 text-sm font-bold uppercase tracking-[0.2em] text-[color:var(--pencil)]">
+                        Grade Tracker
+                    </div>
+                    <p class="max-w-xs text-base leading-relaxed opacity-75">
+                        A simple student planning tool to track course progress, estimate grades, and stay focused on your next target.
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <h3 class="mb-3 text-xl font-bold">Contact</h3>
+                    <ul class="space-y-2 text-base opacity-80">
+                        <li><a href="mailto:abhiramardra@outlook.com" class="hover:underline">abhiramardra@outlook.com</a></li>
+                        <li><a href="tel:+60167721542" class="hover:underline">+60 16 772 1542</a></li>
+                        <li>Bug Report</li>
+                    </ul>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <h3 class="mb-3 text-xl font-bold">Follow</h3>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <a href="https://github.com" target="_blank" rel="noreferrer" class="sketch-button muted !min-h-0 !px-3 !py-2 text-sm">GitHub</a>
+                        <a href="https://www.instagram.com/creeperman16487/" target="_blank" rel="noreferrer" class="sketch-button muted !min-h-0 !px-3 !py-2 text-sm">Instagram</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 border-t border-[color:var(--pencil)]/60 pt-4 text-center text-sm opacity-70">
+                <p class="mt-3 max-w-2xl mx-auto leading-relaxed">
+                    Disclaimer: This website is designed for planning and educational estimation only. It does not collect personal academic data or store your grades beyond your current browser session unless you choose to save locally.
+                </p>
+            </div>
+        </div>
+    </footer>
 
     <script src="./static/script.js"></script>
 </body>
