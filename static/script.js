@@ -1289,15 +1289,13 @@ if ('serviceWorker' in navigator) {
 
 // 2. Capture the browser's automatic install trigger
 let deferredPrompt;
-// Check if we have already asked the user in a previous session
-const hasBeenAsked = localStorage.getItem('pwaPromptAsked');
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent the default browser banner from popping up randomly
+  // Always prevent the default browser banner from popping up randomly
   e.preventDefault();
   
-  // If the user was already asked before, stop here and do not save the prompt
-  if (hasBeenAsked === 'true') {
+  // Double-check localStorage. If already asked before, kill the event entirely.
+  if (localStorage.getItem('pwaPromptAsked') === 'true') {
     return;
   }
 
@@ -1308,12 +1306,17 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 // 3. Trigger the prompt automatically on the user's very first click/tap on the page
 window.addEventListener('click', () => {
-  // Check if the install prompt event has been captured yet
+  // 1. Check if we already asked them in the past
+  if (localStorage.getItem('pwaPromptAsked') === 'true') {
+    return; 
+  }
+
+  // 2. Check if the browser has fired the install prompt event yet
   if (deferredPrompt) {
     // Show the install prompt immediately
     deferredPrompt.prompt();
     
-    // Immediately mark that we have asked, regardless of their choice
+    // FORCE-WRITE to localStorage instantly so no subsequent clicks can fire it
     localStorage.setItem('pwaPromptAsked', 'true');
     
     // Wait for the user's decision (Accepted or Cancelled)
@@ -1323,7 +1326,7 @@ window.addEventListener('click', () => {
       } else {
         console.log('User dismissed the installation.');
       }
-      // Clear the prompt variable so it doesn't trigger again on next clicks
+      // Clear the prompt variable completely
       deferredPrompt = null;
     });
   }
