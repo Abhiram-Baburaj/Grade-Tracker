@@ -1275,10 +1275,10 @@ window.onload = () => {
 };
 
 // ========================================================
-// PWA AUTOMATIC INSTALL CODE
+// PWA AUTOMATIC INSTALL CODE (ONE-TIME ASK)
 // ========================================================
 
-// 1. Register the Service Worker (Notice the '/' path so it reads from the root)
+// 1. Register the Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
@@ -1289,13 +1289,20 @@ if ('serviceWorker' in navigator) {
 
 // 2. Capture the browser's automatic install trigger
 let deferredPrompt;
+// Check if we have already asked the user in a previous session
+const hasBeenAsked = localStorage.getItem('pwaPromptAsked');
 
 window.addEventListener('beforeinstallprompt', (e) => {
   // Prevent the default browser banner from popping up randomly
   e.preventDefault();
+  
+  // If the user was already asked before, stop here and do not save the prompt
+  if (hasBeenAsked === 'true') {
+    return;
+  }
+
   // Save the event so we can trigger it later
   deferredPrompt = e;
-  
   console.log('App is ready for automatic installation.');
 });
 
@@ -1305,6 +1312,9 @@ window.addEventListener('click', () => {
   if (deferredPrompt) {
     // Show the install prompt immediately
     deferredPrompt.prompt();
+    
+    // Immediately mark that we have asked, regardless of their choice
+    localStorage.setItem('pwaPromptAsked', 'true');
     
     // Wait for the user's decision (Accepted or Cancelled)
     deferredPrompt.userChoice.then((choiceResult) => {
