@@ -1281,7 +1281,7 @@ window.onload = () => {
 // 1. Register the Service Worker (Notice the '/' path so it reads from the root)
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker.register('./sw.js')
       .then(reg => console.log('Service Worker successfully registered!', reg))
       .catch(err => console.error('Service Worker registration failed:', err));
   });
